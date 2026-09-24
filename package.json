@@ -1,0 +1,9 @@
+{
+  "name": "cat-tower-defense",
+  "private": true,
+  "description": "La Maison de Michka: a cute 3D tower-defense game with cats",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs"
+  }
+}

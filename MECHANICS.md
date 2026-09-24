@@ -1,10 +1,10 @@
 # Michka's House — Game Mechanics
 
-*La Maison de Michka* is a 3D tower-defense game in one file (`index.html`, three.js r128).
+*La Maison de Michka* is a 3D tower-defense game for the browser (three.js r128, plain ES modules in `src/`).
 Invaders walk up a garden path toward the house. You place cats on the grass to stop them.
 Michka, the house cat, watches from the chimney.
 
-All numbers below come from the code. The constants are at the top of the script
+All numbers below come from the code. Nearly all of them live in [`src/config.js`](src/config.js)
 (`MAPS`, the Difficulty block, `TYPES`, `ENEMIES`, `waveMix`, …).
 
 ---
@@ -53,7 +53,7 @@ There is a single difficulty. It is always on, so there is nothing to choose. It
 |---|---|
 | Lives | 9 |
 | Starting fish | 130 |
-| Enemy HP growth per wave | `1 + 0.15 × (w − 1) + 0.03 × (w − 1)² + 0.35 × max(0, w − 5)²`. Gentle through wave 5, then much steeper. Including the extra toughness below, that's ×1.48 on wave 3, ×3.08 on wave 6 and ×14.6 on wave 10. |
+| Enemy HP growth per wave | `1 + 0.15 × (w − 1) + 0.03 × (w − 1)² + 0.37 × max(0, w − 5)²`. Gentle through wave 5, then much steeper. Including the extra toughness below, that's ×1.48 on wave 3, ×3.10 on wave 6 and ×15.2 on wave 10. |
 | Extra toughness | ×1.08, multiplied by the map's HP factor (both maps ×1) |
 
 **Ramp:** the extra toughness builds up over waves 1–5.
@@ -69,7 +69,7 @@ The steep curve after wave 5 keeps waves 7–10, and the Bulldog King, a real te
 | Player | Result |
 |---|---|
 | Casual (cats on random tiles next to the path) | usually wins, narrowly |
-| Strong (ideal placement, spends everything) | 2 stars: the Bulldog King gets through |
+| Strong (ideal placement, spends everything) | wins with 1–2 stars: the Bulldog King usually gets through, sometimes a few invaders in wave 9 |
 
 ## 4. Economy — fish 🐟
 
@@ -103,6 +103,8 @@ The steep curve after wave 5 keeps waves 7–10, and the Bulldog King, a real te
   - Persians don't boost each other.
   - When several Persians reach the same cat, only the strongest boost counts.
   - A purring Persian sends out a pink ripple every 2.4 s.
+  - Every boosted cat shows it: a pink ring pulses around its cushion and little music notes float up from it.
+    Its info panel shows a pink "purring +x %" badge.
 - An attack has a 0.3 s wind-up. The hit or the throw lands halfway through it.
 - A newly placed cat drops in over 0.55 s and can't attack until it lands.
 
@@ -168,7 +170,7 @@ the enemy's real position on the path does not change.
 | 🐦 Pigeon | 32 | 1.45 | 7 | 1 | **Flies** 0.9 above the path. Kittens can't reach it. |
 | 🦔 Hedgehog | 60 | 0.95 | 10 | 1 | **Armour 6**: each hit does 6 less damage, minimum 1 |
 | 🐶 Dog | 170 | 0.75 | 18 | **2** | — |
-| 👑 Bulldog King | 800 | 0.5 | 150 | **4** | **Boss.** Slows work only half as well on it. |
+| 👑 Bulldog King | 700 | 0.5 | 150 | **4** | **Boss.** Slows work only half as well on it. |
 
 - **Squirrel dash:** the squirrel moves in 1-second cycles.
   - For half a second it dashes at 1.9× speed.
@@ -177,12 +179,12 @@ the enemy's real position on the path does not change.
 - **Boss and slows:** a slow of `f` counts as `1 − (1 − f) / 2` on the Bulldog King.
   For example, a 45 % speed slow leaves it at 72.5 % speed.
 - **HP:** base HP × the growth curve for the wave × the extra toughness (with the ramp from §3).
-  On the Garden, wave 10 enemies have 14.6× base HP.
+  On the Garden, wave 10 enemies have 15.2× base HP.
 - The first time a new kind of invader appears, a longer message introduces it.
 
 ## 7. Waves
 
-- Start a wave with the button or **Space**.
+- Start a wave with the button or **Space**. Calling a wave early (below) only works with the button, so a stray Space press can't trigger it.
 - **Calling a wave early:** once every enemy of the current wave has spawned,
   you can call the next wave while enemies are still on the path.
   - It pays **10 + 2 × wave number** fish.
@@ -221,14 +223,14 @@ The table below is for the Garden:
 | 3 | 10 | 2 | 2 | 0 | 0 | 0 | 0 | 1.48 | 511 | 68 | 24 | 325 |
 | 4 | 12 | 3 | 3 | 0 | 0 | 1 | 0 | 1.82 | 1 158 | 116 | 27 | 468 |
 | 5 | 12 | 5 | 4 | 2 | 0 | 1 | 0 | 2.25 | 1 880 | 157 | 30 | 655 |
-| 6 | 13 | 6 | 5 | 3 | 2 | 1 | 0 | 3.08 | 3 355 | 223 | 33 | 911 |
-| 7 | 14 | 7 | 6 | 4 | 3 | 2 | 0 | 4.73 | 6 873 | 285 | 36 | 1 232 |
-| 8 | 15 | 8 | 6 | 5 | 4 | 2 | 0 | 7.20 | 11 655 | 329 | 39 | 1 600 |
-| 9 | 16 | 9 | 6 | 5 | 4 | 3 | 0 | 10.50 | 19 536 | 371 | 42 | 2 013 |
-| 10 | 17 | 11 | 6 | 5 | 4 | 3 | 1 | 14.61 | 40 754 | 600 | 45 | 2 658 |
+| 6 | 13 | 6 | 5 | 3 | 2 | 1 | 0 | 3.10 | 3 379 | 223 | 33 | 911 |
+| 7 | 14 | 7 | 6 | 4 | 3 | 2 | 0 | 4.82 | 6 999 | 285 | 36 | 1 232 |
+| 8 | 15 | 8 | 6 | 5 | 4 | 2 | 0 | 7.40 | 11 970 | 329 | 39 | 1 600 |
+| 9 | 16 | 9 | 6 | 5 | 4 | 3 | 0 | 10.84 | 20 179 | 371 | 42 | 2 013 |
+| 10 | 17 | 11 | 6 | 5 | 4 | 3 | 1 | 15.15 | 40 745 | 600 | 45 | 2 658 |
 
 - "Total fish earned" assumes every enemy is killed and no wave is called early. It ignores spending.
-- In wave 10, the Bulldog King has 11 690 of the 40 754 HP.
+- In wave 10, the Bulldog King has 10 607 of the 40 745 HP.
 
 ## 8. Controls
 
@@ -239,7 +241,8 @@ The table below is for the Garden:
 | Select a placed cat | Click it | — |
 | Upgrade / change target / sell the selected cat | Info panel buttons | **U** / **T** / **X** |
 | Cancel / deselect | Right-click or click off the map | **Esc** |
-| Start or call the next wave | Button | **Space** |
+| Start the next wave | Button | **Space** |
+| Call the next wave early | Button only (so a stray Space press can't do it) | — |
 | Pause | Pause button | **P** |
 | Sound on / off | Speaker button | **M** |
 | Game speed 1× / 2× / 3× | Speed button | — |

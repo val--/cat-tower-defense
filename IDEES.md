@@ -32,8 +32,8 @@ On peut « sauter » dans Michka et passer en **vue à la première personne** p
 
 **Points techniques :**
 - Les touches Z Q S D / W A S D déplacent aujourd'hui la caméra. En vue subjective, elles doivent diriger Michka.
-- Il faut empêcher Michka de traverser les chats posés, les buissons et la maison. La grille `grid` connaît déjà chaque case.
-- La vue subjective peut remplacer temporairement la caméra orbitale : la fonction `applyCamera` est l'endroit à modifier.
+- Il faut empêcher Michka de traverser les chats posés, les buissons et la maison. La grille `S.grid` ([src/state.js](src/state.js)) connaît déjà chaque case.
+- La vue subjective peut remplacer temporairement la caméra orbitale : la fonction `applyCamera` de [src/camera.js](src/camera.js) est l'endroit à modifier.
 - Faut-il ralentir le temps en vue subjective ? À décider en jouant.
 
 ### Potiron — le tireur du toit 🔍
@@ -48,8 +48,8 @@ Potiron, un chat roux, reste **sur le toit** de la maison et lance des projectil
 - **Projectile :** à inventer. Une pelote, un poisson séché, une tuile du toit ?
 
 **Points techniques :**
-- Le toit existe déjà (le groupe `house`). Potiron s'y pose comme Michka sur la cheminée.
-- La logique de tir peut reprendre celle du Tigré (`release`, `shots`), avec une trajectoire plongeante depuis le toit.
+- Le toit existe déjà (le groupe `house` dans [src/world.js](src/world.js)). Potiron s'y pose comme Michka sur la cheminée.
+- La logique de tir peut reprendre celle du Tigré (`release` et les projectiles dans [src/cats.js](src/cats.js)), avec une trajectoire plongeante depuis le toit.
 
 ### Autres chats principaux possibles 💭
 
